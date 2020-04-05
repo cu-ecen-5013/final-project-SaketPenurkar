@@ -7,7 +7,7 @@ This repository contains the final project submissions made by **Saket Penurkar*
 
 Overiew of the repository
 
-**This repository contains the _Buildroot Source Code for RPI-1_ for the final project.**
+**This repository contains the _Buildroot Source Code for RPI-Server_ for the final project.**
 
 [Project Overview Wiki Page](https://github.com/cu-ecen-5013/final-project-surajthite/wiki/Project-Overview)
 
