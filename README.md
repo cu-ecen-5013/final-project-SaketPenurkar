@@ -3,9 +3,9 @@
 
 **Owner of the Repository - Saket Penurkar**
 
-This repository contains the final project submissions made by **Saket Penurkar** for the ECEN 5013 AESD (Spring-20) class which is developed in collaboration with contributions from **Sankalp Pund** and **Suraj Thite**.
+This repository contains the final project submissions made by **Saket Penurkar** for the **ECEN 5013 AESD** (Spring-20) class which is developed in collaboration with contributions from **Sankalp Pund** and **Suraj Thite**.
 
-Overiew of the repository
+Overiew of the repository:
 
 **This repository contains the _Buildroot Source Code for RPI-Server_ for the final project.**
 
