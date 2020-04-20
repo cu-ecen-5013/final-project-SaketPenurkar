@@ -1,0 +1,220 @@
+<!Page for Patients' Data>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="icon" href="Includes/CUBoulderIcon.ico" sizes="16x16">
+    <link rel="stylesheet" href="Includes/bootstrap.min.css">
+    <link rel="stylesheet" href="Includes/toastr.min.css">
+
+    <title>Patients' Data</title>
+  </head>
+  <body>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+                <a class="navbar-brand" href="#">AESD - Remote Health Monitoring System</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+            
+                <div class="collapse navbar-collapse" id="navbarColor01">
+                    <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Home</a>
+                    </li>
+                    <li class="nav-item active">
+                        <a class="nav-link" href="patient_data.html"> Patients' Data <span class="sr-only">(current)</span></a>
+                    </li>
+                    </ul>
+                </div>
+                </nav>
+    </header>
+
+    <main role="main">
+
+        <section class="jumbotron text-center">
+        <div class="container">
+            <h1 class="jumbotron-heading">Patients' Health Data</h1>
+            <p class="lead text-muted">Body Temperature and Heart Rate</p>
+            <p>
+            <button id="cleardata" type="button" class="btn btn-danger">Clear All Data</button>
+            </p>
+        </div>
+        </section>
+
+        <div class="album py-5 bg-light">
+        <div class="container">
+            <div class="row" id="table-row">
+                <table class="table">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th scope="col">Patient ID</th>
+                            <th scope="col">Body Temperature</th>
+                            <th scope="col">Heart Rate</th>
+                            <th scope="col">Timestamp</th>
+							<th scope="col">Risk Factor (High/Low)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+            <div id="DataContainer"></div>
+        </div>
+        </div>
+
+    </main>
+    <footer class="text-muted">
+        <div class="container">
+            <p class="float-left">
+            <a href="#">Back to top</a>
+            </p>
+        </div>
+    </footer>
+    <script src="Includes/jquery-3.3.1.min.js"></script>
+    <script src="Includes/popper.min.js"></script>
+    <script src="Includes/bootstrap.min.js"></script>
+    <script src="Includes/toastr.min.js"></script>
+    <script src="Includes/highcharts.js"></script>
+
+    <script>
+        function displayEmptyTable(){
+            $('table').hide();
+            $('#table-row').html('<div class="container">No data present.</div>');
+        }
+
+        $( document ).ready(function() {
+            $.ajax({
+                url: "Interface/data.php",
+                type: "GET",
+                success: function(result){
+                    var arr = JSON.parse(result);
+                    var str = "";
+                    var humidity=[], temperature=[];
+                    if(arr.length > 0){
+                        for (var i=0;i<arr.length;i++) {
+                            var obj = arr[i];
+                            var curr_date = new Date(obj['date']);
+                            humidity.push({x: curr_date, y: parseInt(obj["humidity"])});
+                            temperature.push({x: curr_date, y: parseInt(obj["temperature"])});
+                            var speed="";
+                            var setting_id="";
+                            if(!obj.hasOwnProperty('auto') && !obj.hasOwnProperty('manual') ){
+                                setting_id = "Unknown";
+                                speed="Unknown";
+                            }else{
+                                if(obj.hasOwnProperty('auto')){
+                                    setting_id = obj['auto']['id']+" (Auto)";
+                                    speed = getSpeed(obj["humidity"], obj["temperature"], obj['auto']);
+                                }else{
+                                    setting_id = obj['manual']['id']+" (Manual)";
+                                    speed = obj['manual']['speed'];
+                                }
+                            }
+                            str = str + "<tr><th scope=\"row\">"+obj["id"]+"</th><td>"+obj["humidity"]+"</td><td>"+obj["temperature"]+"</td><td>"+setting_id+"</td><td>"+speed+"</td><td>"+obj["date"]+"</td></tr>";
+                        }
+                        loadChart(humidity, temperature);
+                        $('tbody').append(str);
+                    }else{
+                        displayEmptyTable();
+                    }
+                }
+            });
+        });
+	
+		function loadChart(humidity, temperature){
+
+            Highcharts.chart('DataContainer', {
+                title: {
+                    text: 'Graph'
+                },
+
+                xAxis: {
+                    title: {
+                        text: 'DateTime'
+                    },
+                    type: 'datetime'
+                },
+
+                yAxis: {
+                    title: {
+                        text: 'Value'
+                    }
+                },
+                legend: {
+                    layout: 'vertical',
+                    align: 'right',
+                    verticalAlign: 'middle'
+                },
+
+                plotOptions: {
+                    series: {
+                        label: {
+                            connectorAllowed: false
+                        }
+                    }
+                },
+
+                series: [{
+                    name: 'Humidity',
+                    data: humidity
+                }, {
+                    name: 'Temperature',
+                    data: temperature
+                }],
+
+                responsive: {
+                    rules: [{
+                        condition: {
+                            maxWidth: 500
+                        },
+                        chartOptions: {
+                            legend: {
+                                layout: 'horizontal',
+                                align: 'center',
+                                verticalAlign: 'bottom'
+                            }
+                        }
+                    }]
+                }
+            });
+        }
+	
+        $('#cleardata').on("click",function(){
+            toastr.options = {
+                "closeButton": false,
+                "debug": false,
+                "newestOnTop": true,
+                "progressBar": false,
+                "positionClass": "toast-top-center",
+                "preventDuplicates": false,
+                "onclick": null,
+                "showDuration": "300",
+                "hideDuration": "1000",
+                "timeOut": "7500",
+                "extendedTimeOut": "1000",
+                "showEasing": "swing",
+                "hideEasing": "linear",
+                "showMethod": "fadeIn",
+                "hideMethod": "fadeOut"
+            };
+            toastr["info"]("Sure about clearing all data? <a id=\"yes-Clear\" class=\"btn btn-primary my-2\">Yes</a><a class=\"btn btn-danger my-2\">No</a>");
+            
+            $("#yes-Clear").on('click',function(){
+                $.ajax({
+                    url: "Interface/data.php",
+                    type: "POST",
+                    data: {type: "DELETE"},
+                    success: function(result){
+                        if(result=="true"){
+                            toastr["success"]("All Data Cleared.<a href=\"patient_data.html\" class=\"btn btn-primary my-2\">Reload</a>");
+                        }else{
+                            toastr["error"]("Error: Data Not Cleared");
+                        }
+                    }
+                });
+            });  
+        });
+    </script>
+  </body>
+</html>
