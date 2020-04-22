@@ -83,24 +83,32 @@
             $('#table-row').html('<div class="container">No data present.</div>');
         }
 
+		   $( document ).ready(function() {
+            $.ajax({
+                url: "Interface/data.php",
+                type: "GET",
+                success: function(result){
+                    var arr = JSON.parse(result);
+                    var str = "";
+                    if(arr.length > 0){
+                        for (var i=0;i<arr.length;i++)
+                         {
+                            var obj = arr[i];
+                            str = str + "<tr><th scope=\"row\">"+obj["id"]+"</th><td>"+obj["humidity"]+"</td><td>"+obj["temperature"]+"</td><td>"+obj["auto_id"]+"</td><td>"+obj["manual_id"]+"</td><td>"+obj["date"]+"</td></tr>";
+                            console.log("Loging Start here**");
+                            console.log(str);
+                        }
+
+                        $('tbody').append(str);
+                    }else{
+                        displayEmptyTable();
+                    }
+                }
+            });
+        });
 	
         $('#cleardata').on("click",function(){
             toastr.options = {
-                "closeButton": false,
-                "debug": false,
-                "newestOnTop": true,
-                "progressBar": false,
-                "positionClass": "toast-top-center",
-                "preventDuplicates": false,
-                "onclick": null,
-                "showDuration": "300",
-                "hideDuration": "1000",
-                "timeOut": "7500",
-                "extendedTimeOut": "1000",
-                "showEasing": "swing",
-                "hideEasing": "linear",
-                "showMethod": "fadeIn",
-                "hideMethod": "fadeOut"
             };
             toastr["info"]("Sure about clearing all data? <a id=\"yes-Clear\" class=\"btn btn-primary my-2\">Yes</a><a class=\"btn btn-danger my-2\">No</a>");
             
