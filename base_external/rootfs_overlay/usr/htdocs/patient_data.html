@@ -6,6 +6,7 @@
     <link rel="icon" href="Includes/CUBoulderIcon.ico" sizes="16x16">
     <link rel="stylesheet" href="Includes/bootstrap.min.css">
     <link rel="stylesheet" href="Includes/toastr.min.css">
+    <meta http-equiv="refresh" content="10">
 
     <title>Patients' Data</title>
   </head>
@@ -27,32 +28,49 @@
                     </li>
                     </ul>
                 </div>
-                </nav>
+        </nav>
     </header>
 
     <main role="main">
-
-        <section class="jumbotron text-center">
-        <div class="container">
+		<section class="jumbotron text-center">
+			<div class="container">
             <h1 class="jumbotron-heading">Patients' Health Data</h1>
             <p class="lead text-muted">Body Temperature and Heart Rate</p>
-            <p>
-            <button id="cleardata" type="button" class="btn btn-danger">Clear All Data</button>
-            </p>
-        </div>
+			</div>
         </section>
 
-        <div class="album py-5 bg-light">
-        <div class="container">
-            <div class="row" id="table-row">
+<div class="modal-body row">
+            <div class="col-md-6">
+                <div class="album py-5 bg-light">
+                    <div class="container">
+                        <div class="row" id="table-row">
                 <table class="table">
                     <thead class="thead-dark">
                         <tr>
                             <th scope="col">Patient ID</th>
+							<th scope="col">Timestamp</th>
                             <th scope="col">Body Temperature</th>
-                            <th scope="col">Heart Rate</th>
-                            <th scope="col">Timestamp</th>
-							<th scope="col">Risk Factor (High/Low)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                    </tbody>
+                </table>
+						</div>
+						<div id="DataContainer"></div>
+							<object data="temperature.txt" width="600" height="400"></object>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="album py-5 bg-light">
+                    <div class="container">
+                        <div class="row" id="table-row">
+                <table class="table">
+                    <thead class="thead-dark">
+                        <tr>
+			    <th scope="col">Timestamp</th>
+                <th scope="col">Humidity in the ICU</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -60,7 +78,13 @@
                 </table>
             </div>
             <div id="DataContainer"></div>
-        </div>
+			<object data="humidity.txt" width="600" height="400"></object>
+            </div>
+              </div>
+            </div>
+ </div>
+
+        
         </div>
 
     </main>
@@ -71,62 +95,10 @@
             </p>
         </div>
     </footer>
-    <script src="Includes/jquery-3.3.1.min.js"></script>
-    <script src="Includes/popper.min.js"></script>
-    <script src="Includes/bootstrap.min.js"></script>
+	<script src="Includes/bootstrap.min.js"></script>
     <script src="Includes/toastr.min.js"></script>
     <script src="Includes/highcharts.js"></script>
-
-    <script>
-        function displayEmptyTable(){
-            $('table').hide();
-            $('#table-row').html('<div class="container">No data present.</div>');
-        }
-
-		   $( document ).ready(function() {
-            $.ajax({
-                url: "Interface/data.php",
-                type: "GET",
-                success: function(result){
-                    var arr = JSON.parse(result);
-                    var str = "";
-                    if(arr.length > 0){
-                        for (var i=0;i<arr.length;i++)
-                         {
-                            var obj = arr[i];
-                            str = str + "<tr><th scope=\"row\">"+obj["id"]+"</th><td>"+obj["humidity"]+"</td><td>"+obj["temperature"]+"</td><td>"+obj["auto_id"]+"</td><td>"+obj["manual_id"]+"</td><td>"+obj["date"]+"</td></tr>";
-                            console.log("Loging Start here**");
-                            console.log(str);
-                        }
-
-                        $('tbody').append(str);
-                    }else{
-                        displayEmptyTable();
-                    }
-                }
-            });
-        });
-	
-        $('#cleardata').on("click",function(){
-            toastr.options = {
-            };
-            toastr["info"]("Sure about clearing all data? <a id=\"yes-Clear\" class=\"btn btn-primary my-2\">Yes</a><a class=\"btn btn-danger my-2\">No</a>");
-            
-            $("#yes-Clear").on('click',function(){
-                $.ajax({
-                    url: "Interface/data.php",
-                    type: "POST",
-                    data: {type: "DELETE"},
-                    success: function(result){
-                        if(result=="true"){
-                            toastr["success"]("All Data Cleared.<a href=\"patient_data.html\" class=\"btn btn-primary my-2\">Reload</a>");
-                        }else{
-                            toastr["error"]("Error: Data Not Cleared");
-                        }
-                    }
-                });
-            });  
-        });
-    </script>
+    <script src="Includes/jquery-3.3.1.min.js"></script>
+    <script src="Includes/popper.min.js"></script>
   </body>
 </html>
