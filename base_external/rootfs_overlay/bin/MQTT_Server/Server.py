@@ -1,3 +1,5 @@
+# Reference - https://github.com/eclipse/paho.mqtt.python
+
 import context  # Ensures paho is in PYTHONPATH
 import paho.mqtt.client as mqtt
 import datetime
